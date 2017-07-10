@@ -1,0 +1,97 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<script type="text/javascript" src="weather.js"></script>
+<script type="text/javascript" src="fish.js"></script>
+<script type="text/javascript" src="jquery-2.js"></script>
+<!-- <script type="text/javascript" src="file:///C:/dev/jquery/jquery-2.1.4.js"> -->
+
+<script type="text/javascript">
+var alarms;
+function setAlarm() {
+    alarms = [];
+    for(var f in Fish.fishList) {
+        f = Fish.fishList[f];
+        var check = 'cb' + f.fname;
+        var div = 'div' + f.fname;
+        var time = Fish.fish2time(f.fname)
+        if($("#" + check).is(":checked")) {
+            $("#" + div).html(time);
+            alarms.push({ t : time, fname : f.fname});
+        }
+        else
+            $("#" + div).html("");
+    }
+    checkAlarms();
+}
+
+function checkAlarms() {
+    for(var i in alarms) {
+        var a = alarms[i]
+        if(new Date() > a.t) {
+            console.log("beep");
+            new Audio('se.9.mp3').play();
+            alarms.splice(i, 1);
+            $("#div" + a.fname).css("color", "#FF0000");
+        }
+    }
+    setTimeout(checkAlarms, 1000);
+}
+function populateTable(){
+    table = $("#table");
+    table.html("<tr><td> Set Alarm? </td> <td> |Fish </td> <td> |Zone </td> <td> |Eorzean Time </td> <td> |Weather </td> <td> |Pop Date </td> </tr>");
+    for(var f in Fish.fishList) {
+        f = Fish.fishList[f];
+        var fishDiv = $('<div>', {id : 'div' + f.fname});
+        var check = $('<input />', {type : 'checkbox', id: 'cb' + f.fname});
+        $('#table')
+            .append($('<tr>')
+                .append($('<td>')
+                    .append(check)
+                )
+                .append($('<td>')
+                    .append(f.fname)
+                )
+                .append($('<td>')
+                    .append(JSON.stringify(f.zone))
+                )
+                .append($('<td>')
+                    .append(JSON.stringify(f.time))
+                )
+                .append($('<td>')
+                    .append(JSON.stringify(f.weather))
+                )
+                .append($('<td>')
+                    .append(fishDiv)
+                )
+            );
+    }
+}
+window.onload = populateTable
+</script>
+</head>
+<body>
+<table><tbody id=table></tbody></table>
+
+<button onclick="setAlarm()">Set Alarms</button><br>
+<button onclick="populateTable()">Reset</button><br>
+
+About this site:
+<p>
+Hi! I'm Kupareen Aubrey from Hyperion. I made this for you. It's a way of thanking the ffxiv fishing comunity for the amazing collective work on the fishing spreadsheet. It helped me a lot and I hope this site helps you a lot.
+</p>
+<p>
+Not all the fish are listed. Some just were not important and I was lazy adding them, some have some kind of tricky times. Currently my code supports spawn times in weather windows (0-8, 8-16, 16-24 Eorzea time) only. So I kinda rounded up some times (like fish listed as spawning from 1am on the sheet). Also sometimetes it's gonna answer "Never D:". That means the weather prediction found no date with the desired weather-time on the next 16 days or so. It migth be because of a bug, not sure.
+</p>
+<p>
+The original data is on the <a href="https://docs.google.com/spreadsheets/d/1nGOT4ZihdgsucfK_yPSInELfCXTDOGMtrlRwXxomr5Y/htmlview?usp=sharing&sle=true#"> Spreadsheet </a> if you didn't know it you should throw away that fishing rod.
+</p>
+<p>
+Most of the code is not atually mine. Original weather prediction code can be found on <a href="https://www.reddit.com/r/ffxiv/comments/33tqok/cloudy_with_a_chance_of_garlok_predicting_eorzean/"> This Reddit Post </a>.
+</p>
+<p>
+Questions? Comments? Want X fish added? Imprecisions? Bugs? Surely it's bugs, It must have a lot. If you know how it works, you can make a pull request with your fixes. If not, you can message me via Discord. Search for te username Kupa on Fisherman's Horizon.
+</p>
+<p>
+So long, and thanks for all the fish.
+</p>
+</body></html>
